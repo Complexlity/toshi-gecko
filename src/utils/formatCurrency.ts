@@ -3,7 +3,7 @@ export function formatCurrency(input: number, maxInteger: number = 13, decimalPl
 
 	if (Number.isInteger(input)) {
 		if (inputStr.length > maxInteger) {
-			return input.toExponential(decimalPlaces)
+			return input.toExponential(2)
 		}
 		return inputStr
 	}
@@ -17,7 +17,7 @@ export function formatCurrency(input: number, maxInteger: number = 13, decimalPl
 
 
   if (integerPart.length > (maxInteger - decimalPlaces)) {
-    return Number(integerPart).toExponential(decimalPlaces)
+    return Number(integerPart).toExponential(2)
   }
 
   return inputStr
