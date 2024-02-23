@@ -1,0 +1,15 @@
+{
+  "tokenName": "Toshi",
+  "tokenSymbol": "TOSHI",
+  "tokenLogo": null,
+  "tokenDecimals": "18",
+  "nativePrice": "33819184851000000000000000000",
+  "usdPrice": 0.000099130412951931,
+  "usdPriceFormatted": "0.000099130412951931",
+  "exchangeName": "Uniswap v3",
+  "exchangeAddress": "0x33128a8fc17869897dce68ed026d694621f6fdfd",
+  "tokenAddress": "0xac1bd2486aaf3b5c0fc3fd868558b082a531b2b4",
+  "priceLastChangedAtBlock": "10952828",
+  "verifiedContract": false,
+  "24hrPercentChange": "0.5977473749701664"
+}
