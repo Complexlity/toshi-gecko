@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
 
     if (response) console.log("I returned response");
     if (buttonId == 2) {
-      const statsImageUrl = `${process.env.HOST}/image/stats?price=${toshiPriceData.usdPrice}&change=${toshiPriceData["24hrPercentChange"]}`;
+      const statsImageUrl = `${process.env.HOST}/images/stats?price=${toshiPriceData.usdPrice}&change=${toshiPriceData["24hrPercentChange"]}`;
       returnedFrame.image = returnedFrame.ogImage = statsImageUrl;
       console.log("Here's where I return the stats");
       return new NextResponse(getFrameHtml(returnedFrame), {
@@ -77,7 +77,11 @@ export async function POST(request: NextRequest) {
         return new NextResponse("Invalid input text", { status: 400 });
       }
       const amount = inputTextAsNumber * toshiPriceData.usdPrice;
-      const calculatorImageUrl = `${process.env.HOST}/image/calculator?toshi=${formatCurrency(inputTextAsNumber)}&usd=${formatCurrency(amount)}`;
+      const calculatorImageUrl = `${
+        process.env.HOST
+      }/images/calculator?toshi=${formatCurrency(
+        inputTextAsNumber
+      )}&usd=${formatCurrency(amount)}`;
       returnedFrame.image = returnedFrame.ogImage = calculatorImageUrl;
       console.log("Here's where I calculate the price");
 
