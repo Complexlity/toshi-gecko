@@ -18,7 +18,7 @@ const initialFrame: Frame = {
       action: "post",
     },
     {
-      label: "Price Stats",
+      label: "Latest Price",
       action: "post",
     },
   ],
