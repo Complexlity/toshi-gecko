@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
         process.env.HOST
       }/images/calculator?toshi=${formatCurrency(
         inputTextAsNumber
-      )}&usd=${formatCurrency(amount)}`;
+      )}&usd=${formatCurrency(amount, 11, 4)}`;
       returnedFrame.image = returnedFrame.ogImage = calculatorImageUrl;
       console.log("Here's where I calculate the price");
 
