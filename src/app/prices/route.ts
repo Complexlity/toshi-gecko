@@ -60,10 +60,6 @@ export async function POST(request: NextRequest) {
     });
 
     const toshiPriceData = response.result;
-    fs.writeFileSync(
-      "toshiPriceData.json",
-      JSON.stringify(toshiPriceData, null, 2)
-    );
 
     if (response) console.log("I returned response");
     if (buttonId == 2) {
