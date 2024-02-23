@@ -3,6 +3,7 @@ import { EvmChain } from "@moralisweb3/common-evm-utils";
 import { NextRequest, NextResponse } from "next/server";
 import { Frame, getFrameHtml, getFrameHtmlHead } from "frames.js";
 import fs from "fs";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 // Your code here
 const address = "0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4";
@@ -76,7 +77,7 @@ export async function POST(request: NextRequest) {
         return new NextResponse("Invalid input text", { status: 400 });
       }
       const amount = inputTextAsNumber * toshiPriceData.usdPrice;
-      const calculatorImageUrl = `${process.env.HOST}/image/calculator?toshi=${inputTextAsNumber}&usd=${amount}`;
+      const calculatorImageUrl = `${process.env.HOST}/image/calculator?toshi=${formatCurrency(inputTextAsNumber)}&usd=${formatCurrency(amount)}`;
       returnedFrame.image = returnedFrame.ogImage = calculatorImageUrl;
       console.log("Here's where I calculate the price");
 
