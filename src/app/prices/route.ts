@@ -22,7 +22,12 @@ export async function GET(request: NextRequest) {
     ],
     postUrl: `${process.env.HOST}/prices`,
   };
-  return new NextResponse(getFrameHtml(initialFrame, {htmlBody: `<div>Hello world </div>`}))
+  return new NextResponse(
+    getFrameHtml(initialFrame, { htmlBody: `<div>Hello world </div>` }),
+    {
+      status: 200, headers: { "content-type": "text/html" },
+    }
+  );
 }
 export async function POST(request: NextRequest) {
 	await Moralis.start({
