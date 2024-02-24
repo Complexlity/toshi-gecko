@@ -64,7 +64,9 @@ export async function POST(request: NextRequest) {
 
     if (response) console.log("I returned response");
     if (buttonId == 2) {
-      const statsImageUrl = `${process.env.HOST}/images/stats?price=${toshiPriceData.usdPrice}&change=${toshiPriceData["24hrPercentChange"]}`;
+      const percentChange = Number(toshiPriceData["24hrPercentChange"])
+      const actualChange = (toshiPriceData.usdPrice * percentChange / 100)
+      const statsImageUrl = `${process.env.HOST}/images/stats?price=${toshiPriceData.usdPrice.toFixed(8)}&changeP=${percentChange.toFixed(2)}&changeA=${actualChange.toFixed(10)}`;
       returnedFrame.image = returnedFrame.ogImage = statsImageUrl;
       console.log("Here's where I return the stats");
       return new NextResponse(getFrameHtml(returnedFrame), {
