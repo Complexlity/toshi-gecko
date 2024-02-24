@@ -1,14 +1,13 @@
-import Moralis from "moralis";
-import { EvmChain } from "@moralisweb3/common-evm-utils";
-import { NextRequest, NextResponse } from "next/server";
-import { Frame, getFrameHtml, getFrameHtmlHead } from "frames.js";
-import fs from "fs";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { EvmChain } from "@moralisweb3/common-evm-utils";
+import { Frame, getFrameHtml } from "frames.js";
+import Moralis from "moralis";
+import { NextRequest, NextResponse } from "next/server";
 
 // Opt out of caching for all data requests in the route segment
 export const dynamic = 'force-dynamic'
 
-// Your code here
+
 const address = "0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4";
 
 const chain = EvmChain.BASE;
