@@ -5,8 +5,10 @@ import { NextRequest } from "next/server";
 
 export const runtime = "edge";
 
-export async function GET() {
-  const curr = Math.ceil(Math.random() * 4)
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url)
+
+  const curr = searchParams.get('curr') ?? Math.ceil(Math.random() * 4)
   return new ImageResponse(
     (
       <div

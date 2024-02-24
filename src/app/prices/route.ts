@@ -9,7 +9,9 @@ import { formatCurrency } from "@/utils/formatCurrency";
 const address = "0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4";
 
 const chain = EvmChain.BASE;
-const startImageUrl = `${process.env.HOST}/images/start`;
+const startImageUrl = `${process.env.HOST}/images/start?curr=${Math.ceil(
+  Math.random() * 4
+)}`;
 const initialFrame: Frame = {
   image: startImageUrl,
   version: "vNext",
