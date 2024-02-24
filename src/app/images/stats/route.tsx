@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
           }}
         >
           <img
-            src={`${process.env.HOST}/cyrpto-chart.jpg`}
+            src={`${process.env.HOST}/crypto-chart.jpg`}
             width={"100%"}
             height={"100%"}
           />
@@ -52,52 +52,55 @@ export async function GET(request: NextRequest) {
         </div>
         <div style={{ gap: "10px" }} tw={"flex flex-col p-0 m-0"}>
           <div style={{ gap: "10px" }} tw="flex items-end">
-						<p tw={"text-9xl p-0 m-0"}>{usdPrice}</p>
+            <p tw={"text-9xl p-0 m-0"}>{usdPrice}</p>
             <p tw={"font-normal text-7xl p-4 m-0"}>USD</p>
           </div>
-          <div tw={`flex text-6xl font-semibold ${percentChange > 0 ? "text-green-600" : "text-red-600"}`}>
-						<p tw={"p-0 m-0"}>{actualChange}</p>
+          <div
+            style={{gap:"10px"}}
+            tw={`flex text-6xl font-semibold ${
+              percentChange > 0 ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            <p tw={"p-0 m-0"}>{actualChange}</p>
             <p tw={"p-0 m-0"}>({percentChange})</p>
             <p tw={"p-0 m-0 flex items-center"}>
-							{
-								percentChange > 0 ?
-								<svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="48"
-                height="48"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-								>
-                <path d="m5 12 7-7 7 7" />
-                <path d="M12 19V5" />
-              </svg>
-									:
-              <svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="54"
-							height="54"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							strokeWidth="2"
-							strokeLinecap="round"
-							strokeLinejoin="round"
-              >
-                <path d="M12 5v14" />
-                <path d="m19 12-7 7-7-7" />
-              </svg>
-						}
+              {percentChange > 0 ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="60"
+                  height="60"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="m5 12 7-7 7 7" />
+                  <path d="M12 19V5" />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="60"
+                  height="60"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M12 5v14" />
+                  <path d="m19 12-7 7-7-7" />
+                </svg>
+              )}
               today
             </p>
           </div>
         </div>
       </div>
     ),
-
     {
       width: 1146,
       height: 600,
