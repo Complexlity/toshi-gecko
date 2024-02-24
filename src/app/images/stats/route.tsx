@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
             }`}
           >
             <p tw={"p-0 m-0"}>{actualChange}</p>
-            <p tw={"p-0 m-0"}>({percentChange})</p>
+            <p tw={"p-0 m-0"}>({percentChange}%)</p>
             <p tw={"p-0 m-0 flex items-center"}>
               {percentChange > 0 ? (
                 <svg
