@@ -71,21 +71,27 @@ export async function POST(request: NextRequest) {
 
     const toshiPriceData = response.result;
 
-    if (response) console.log("I returned response");
     if (buttonId == 2) {
       const percentChange = Number(toshiPriceData["24hrPercentChange"])
       const actualChange = (toshiPriceData.usdPrice * percentChange / 100)
       const statsImageUrl = `${process.env.HOST}/images/stats?price=${toshiPriceData.usdPrice.toFixed(8)}&changeP=${percentChange.toFixed(2)}&changeA=${actualChange.toFixed(10)}`;
       returnedFrame.image = returnedFrame.ogImage = statsImageUrl;
-      console.log("Here's where I return the stats");
       return new NextResponse(getFrameHtml(returnedFrame), {
         status: 200,
         headers: { "content-type": "text/html" },
       });
     } else {
       if (isNaN(inputTextAsNumber) || inputTextAsNumber == 0) {
-        console.log("Invalid input");
-        return new NextResponse("Invalid input text", { status: 400 });
+        const curr = Math.ceil(Math.random() * 4);
+        const startImageUrl = `${process.env.HOST}/images/start?curr=${curr}`;
+        initialFrame.image = initialFrame.ogImage = startImageUrl;
+        return new NextResponse(
+          getFrameHtml(initialFrame, { htmlBody: `<div>Hello world </div>` }),
+          {
+            status: 200,
+            headers: { "content-type": "text/html" },
+          }
+        );
       }
       const amount = inputTextAsNumber * toshiPriceData.usdPrice;
       const calculatorImageUrl = `${
@@ -94,7 +100,7 @@ export async function POST(request: NextRequest) {
         inputTextAsNumber
       )}&usd=${formatCurrency(amount, 11, 4)}`;
       returnedFrame.image = returnedFrame.ogImage = calculatorImageUrl;
-      console.log("Here's where I calculate the price");
+      
 
       return new NextResponse(getFrameHtml(returnedFrame), {
         status: 200,
