@@ -5,12 +5,12 @@ import { NextRequest } from "next/server";
 
 export const runtime = "edge";
 // Opt out of caching for all data requests in the route segment
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url)
+  const { searchParams } = new URL(request.url);
 
-  const curr = searchParams.get('curr') ?? Math.ceil(Math.random() * 4)
+  const curr = searchParams.get("curr") ?? Math.ceil(Math.random() * 4);
   return new ImageResponse(
     (
       <div
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
           height={"360px"}
         />
         <p tw={"text-6xl text-center"}>
-          Find your $TOSHI worth and live market price
+          Track your $TOSHI worth and live market price
         </p>
       </div>
     ),
