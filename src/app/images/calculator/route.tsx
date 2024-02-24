@@ -35,15 +35,15 @@ export async function GET(request: NextRequest)
           }}
         >
           <img
-            src={`${process.env.HOST}/calculator_image.jpg`}
+            src={`${process.env.HOST}/calculator_image.png`}
             width={"100%"}
             height={"100%"}
           />
         </div>
-        <p tw="text-5xl">Toshi Convert </p>
+        <p tw="text-6xl font-bold underline">Converter</p>
         <div tw={"flex flex-col text-8xl"}>
           <div tw={"flex justify-between items-center  mb-6"}>
-            <div tw="flex flex-col gap-1 items-center w-[20%]">
+            <div tw="flex flex-col items-center w-[20%]">
               <img
                 src="https://toshi-gecko.vercel.app/toshi_icon.png"
                 height={150}
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest)
             <span>{toshi}</span>
           </div>
           <div tw={"flex justify-between items-center"}>
-            <div tw="flex flex-col gap-1 items-center w-[20%]">
+            <div tw="flex flex-col items-center w-[20%]">
               <img
                 src="https://toshi-gecko.vercel.app/us_flag_icon.png"
                 height={150}
