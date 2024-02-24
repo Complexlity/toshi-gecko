@@ -37,7 +37,9 @@ export async function GET(request: NextRequest) {
           }}
         >
           <img
-            src={`${process.env.HOST}/cyrpto-chart.png`}
+            src={`${process.env.HOST}/cyrpto-chart.jpg`}
+            width={"100%"}
+            height={"100%"}
           />
         </div>
         <div style={{ gap: "20px" }} tw="flex items-center text-8xl">
