@@ -25,6 +25,21 @@ export async function GET(request: NextRequest)
         }}
         tw={"p-0"}
       >
+        <div
+          style={{
+            display: "flex",
+            position: "absolute",
+            opacity: 0.2,
+            height: "100%",
+            width: "100%",
+          }}
+        >
+          <img
+            src={`${process.env.HOST}/calculator_image.jpg`}
+            width={"100%"}
+            height={"100%"}
+          />
+        </div>
         <p tw="text-5xl">Toshi Convert </p>
         <div tw={"flex flex-col text-8xl"}>
           <div tw={"flex justify-between items-center  mb-6"}>
@@ -52,7 +67,6 @@ export async function GET(request: NextRequest)
         </div>
       </div>
     ),
-
     {
       width: 1146,
       height: 600,
