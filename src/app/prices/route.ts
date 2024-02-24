@@ -12,9 +12,11 @@ export const dynamic = 'force-dynamic'
 const address = "0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4";
 
 const chain = EvmChain.BASE;
-const startImageUrl = `${process.env.HOST}/images/start?curr=${Math.ceil(
+const curr = Math.ceil(
   Math.random() * 4
-)}`;
+)
+const startImageUrl = `${process.env.HOST}/images/start?curr=${curr}`;
+
 const initialFrame: Frame = {
   image: startImageUrl,
   version: "vNext",
@@ -34,6 +36,9 @@ const initialFrame: Frame = {
 };
 
 export async function GET(request: NextRequest) {
+  const curr = Math.ceil(Math.random() * 4);
+  const startImageUrl = `${process.env.HOST}/images/start?curr=${curr}`;
+  initialFrame.image = initialFrame.ogImage = startImageUrl
   return new NextResponse(
     getFrameHtml(initialFrame, { htmlBody: `<div>Hello world </div>` }),
     {
