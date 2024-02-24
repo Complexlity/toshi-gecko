@@ -4,6 +4,8 @@ import { NextRequest } from "next/server";
 // No need to install it.
 
 export const runtime = "edge";
+// Opt out of caching for all data requests in the route segment
+export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)

@@ -5,6 +5,9 @@ import { Frame, getFrameHtml, getFrameHtmlHead } from "frames.js";
 import fs from "fs";
 import { formatCurrency } from "@/utils/formatCurrency";
 
+// Opt out of caching for all data requests in the route segment
+export const dynamic = 'force-dynamic'
+
 // Your code here
 const address = "0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4";
 
