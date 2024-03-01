@@ -1,7 +1,7 @@
 import { formatCurrency } from "@/utils/formatCurrency";
 import { EvmChain } from "@moralisweb3/common-evm-utils";
-import { Frame, getFrameHtml } from "frames.js";
 import Moralis from "moralis";
+import { Frame, getFrameHtml } from "frames.js";
 import { NextRequest, NextResponse } from "next/server";
 
 // Opt out of caching for all data requests in the route segment
@@ -53,12 +53,17 @@ export async function POST(request: NextRequest) {
   const returnedFrame = { ...initialFrame };
 
   const inputTextAsNumber = Number(inputText);
-
+  const moralisApiKey = process.env.MORALIS_API_KEY
+  if (!moralisApiKey) {
+    return new NextResponse("Api Key Missing",{
+      status: 500
+    })
+  }
   if (!Moralis.Core.isStarted) {
     console.log("I will start moralis");
     await Moralis.start({
       apiKey:
-        "jBo2biMfqlNlXRSaTNSEeJwLSOHs0iToM9O97mWbWz0imjPJxaCYf2DGGHCuxrNF",
+       moralisApiKey,
       // ...and any other configuration
     });
   }
@@ -100,7 +105,7 @@ export async function POST(request: NextRequest) {
         inputTextAsNumber
       )}&usd=${formatCurrency(amount, 11, 4)}`;
       returnedFrame.image = returnedFrame.ogImage = calculatorImageUrl;
-      
+
 
       return new NextResponse(getFrameHtml(returnedFrame), {
         status: 200,
