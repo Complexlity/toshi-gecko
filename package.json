@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@moralisweb3/common-evm-utils": "^2.24.3",
+    "frog": "latest",
+    "hono": "^4",
     "frames.js": "^0.5.2",
     "moralis": "^2.24.3",
     "next": "14.1.0",
