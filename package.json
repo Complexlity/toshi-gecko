@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@moralisweb3/common-evm-utils": "^2.25.1",
     "frog": "latest",
     "hono": "^4",
     "moralis": "^2.25.1",

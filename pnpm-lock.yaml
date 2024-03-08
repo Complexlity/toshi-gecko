@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@moralisweb3/common-evm-utils':
+    specifier: ^2.25.1
+    version: 2.25.1
   frog:
     specifier: latest
     version: 0.4.8(@types/node@20.11.25)(hono@4.0.10)(typescript@5.4.2)
