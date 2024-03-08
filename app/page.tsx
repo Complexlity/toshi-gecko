@@ -1,119 +1,44 @@
-import { getFrameMetadata } from 'frog/next'
-import type { Metadata } from 'next'
-import Image from 'next/image'
+import { Frame, getFrameFlattened } from "frames.js";
+import type { Metadata } from "next";
 
-import styles from './page.module.css'
+// Opt out of caching for all data requests in the route segment
+export const dynamic = "force-dynamic";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const frameTags = await getFrameMetadata(
-    `${process.env.VERCEL_URL || 'http://localhost:3000'}/api`,
-  )
-  return {
-    other: frameTags,
-  }
-}
+const curr = Math.ceil(Math.random() * 4);
+const startImageUrl = `${process.env.HOST}/images/start?curr=${curr}`;
 
-export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <p>
-            Get started by editing&nbsp;
-            <code className={styles.code}>app/page.tsx</code>
-          </p>
-          <p>
-            Head to{' '}
-            <a
-              href="/api/dev"
-              style={{ display: 'inline', fontWeight: 'semibold' }}
-            >
-              <code className={styles.code}>localhost:3000/api</code>
-            </a>{' '}
-            for your frame endpoint.
-          </p>
-        </div>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+const initialFrame: Frame = {
+  image: startImageUrl,
+  version: "vNext",
+  buttons: [
+    {
+      label: "Calculate",
+      action: "post",
+    },
+    {
+      label: "Latest Price",
+      action: "post",
+    },
+  ],
+  inputText: "TOSHI amount. e.g 100, 30000",
+  postUrl: `${process.env.HOST}/prices`,
+  ogImage: startImageUrl,
+};
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+export const metadata: Metadata = {
+  title: "Track your $TOSHI worth",
+  description: "Calculate your toshi worth and get live market price",
+  openGraph: {
+    images: [
+      {
+        url: startImageUrl,
+      },
+    ],
+  },
+  //@ts-expect-error
+  other: getFrameFlattened(initialFrame),
+};
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+export default async function Home() {
+  return <div></div>;
 }
