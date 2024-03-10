@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
-  const curr = searchParams.get("curr") ?? Math.ceil(Math.random() * 4);
+  const curr = Math.ceil(Math.random() * 4);
   return new ImageResponse(
     (
       <div
@@ -42,6 +42,10 @@ export async function GET(request: NextRequest) {
     {
       width: 1146,
       height: 600,
+      headers: {
+      "Content-Type": "image/png",
+      "Cache-Control": "max-age=5",
+    },
     }
   );
 }
