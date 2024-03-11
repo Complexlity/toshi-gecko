@@ -46,7 +46,7 @@ const assets = {
     name: "USDC",
     network: "base",
     image: "https://i.ibb.co/JHDfxTV/toshi.png",
-    address: "0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4" as `0x${string}`,
+    address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" as `0x${string}`,
   },
 };
 
