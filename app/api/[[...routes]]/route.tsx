@@ -124,13 +124,14 @@ app.frame("/finish", async (c) => {
 app.transaction("/tx", async (c) => {
   const baseUrl = "https://base.api.0x.org/swap/v1/quote?";
 
-  const value = c.inputText || "0.0002";
-
+  const value = c.inputText || "2";
+  const amount = Number(value) * 1000000;
   // https://0x.org/docs/0x-swap-api/api-references/get-swap-v1-quote#request
   const params = new URLSearchParams({
     buyToken: assets.toshi.address,
-    sellToken: assets.eth.address,
-    sellAmount: parseEther(value).toString(),
+    sellToken: assets.usdc.address,
+    sellAmount: `${amount}`,
+    // sellAmount: parseEther(value).toString(),
     feeRecipient: "0xaf0E8cbb79CFA794abd64BEE25B0001bEdC38a42",
     buyTokenPercentageFee: "0.01",
   }).toString();
