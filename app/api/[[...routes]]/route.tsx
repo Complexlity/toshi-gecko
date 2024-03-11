@@ -7,11 +7,17 @@ import { handle } from 'frog/next'
 import { imageUrls } from '@/app/utils/images'
 
 const app = new Frog({
-  assetsPath: '/',
-  basePath: '/api',
+  assetsPath: "/",
+  basePath: "/api",
+  imageOptions: {
+    headers: {
+      "Content-Type": "image/png",
+      "Cache-Control": "max-age=5",
+    },
+  },
   // Supply a Hub to enable frame verification.
   // hub: neynar({ apiKey: 'NEYNAR_FROG_FM' })
-})
+});
 
 // Uncomment to use Edge Runtime
 // export const runtime = 'edge'

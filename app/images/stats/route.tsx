@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
             <p tw={"font-normal text-7xl p-4 m-0"}>USD</p>
           </div>
           <div
-            style={{gap:"10px"}}
+            style={{ gap: "10px" }}
             tw={`flex text-6xl font-semibold ${
               percentChange > 0 ? "text-green-600" : "text-red-600"
             }`}
@@ -104,6 +104,10 @@ export async function GET(request: NextRequest) {
     {
       width: 1146,
       height: 600,
+      headers: {
+        "Content-Type": "image/png",
+        "Cache-Control": "max-age=5",
+      },
     }
   );
 }

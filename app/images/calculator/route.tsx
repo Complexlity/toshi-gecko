@@ -70,6 +70,10 @@ export async function GET(request: NextRequest)
     {
       width: 1146,
       height: 600,
+      headers: {
+        "Content-Type": "image/png",
+        "Cache-Control": "max-age=5",
+      },
     }
   );
 }
