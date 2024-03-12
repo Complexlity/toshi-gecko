@@ -61,3 +61,7 @@ export async function ConvertToshiToUSD(toshiPrice: number) {
   const amount = toshiPrice * toshiPriceData.usdPrice;
   return amount
 }
+
+export async function getEthPrice() {
+  
+}

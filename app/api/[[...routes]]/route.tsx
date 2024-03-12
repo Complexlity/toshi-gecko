@@ -17,18 +17,9 @@ const baseClient = createPublicClient({
   transport: http(),
 });
 
-type State = {
-  to: `0x${string}`;
-  data: string;
-  value: string;
-};
 
-const app = new Frog<{ State: State }>({
-  initialState: {
-    to: "0xaf0E8cbb79CFA794abd64BEE25B0001bEdC38a42",
-    data: "",
-    value: "",
-  },
+
+const app = new Frog({
   assetsPath: "/",
   basePath: "/api",
   imageOptions: {
@@ -132,18 +123,33 @@ app.frame("/price", async (c) => {
 
 app.frame("/buy", async (c) => {
   return c.res({
+    action: "/finish",
     image: <BuyStartImage />,
     intents: [
       <TextInput placeholder="ETH amount(default = 0.01)" />,
-      <Button action="/preview">Preview Tx</Button>,
+      <Button.Transaction target="/tx">Confirm</Button.Transaction>,
       <Button.Reset>Back</Button.Reset>,
     ],
   });
 });
 
-app.frame("/preview", async (c) => {
-  const { deriveState, previousState, inputText } = c;
-  let state = previousState;
+app.frame("/finish", async (c) => {
+  const { transactionId } = c;
+
+
+  return c.res({
+    image: "https://pbs.twimg.com/media/F4M9IOlWwAEgTDf.jpg",
+    intents: [
+      <Button.Link href={`https://basescan.org/tx/${transactionId}`}>
+        View Transaction
+      </Button.Link>,
+      <Button.Reset>Home</Button.Reset>,
+    ],
+  });
+});
+
+app.transaction("/tx", async (c) => {
+  const { inputText } = c;
 
   const baseUrl = "https://base.api.0x.org/swap/v1/quote?";
 
@@ -168,46 +174,11 @@ app.frame("/preview", async (c) => {
 
   const order = (await res.json()) as ZeroXSwapQuote;
 
-  state = deriveState((previousState) => {
-    (previousState.to = order.to),
-      (previousState.data = order.data),
-      (previousState.value = order.value);
-  });
-
-  return c.res({
-    action: "/finish",
-    image: <TradeImage />,
-    intents: [
-      <Button.Transaction target="/tx">Confirm</Button.Transaction>,
-      <Button.Reset>Back</Button.Reset>,
-    ],
-  });
-});
-
-app.frame("/finish", async (c) => {
-  const { transactionId } = c;
-
-  
-  return c.res({
-    image: "https://pbs.twimg.com/media/F4M9IOlWwAEgTDf.jpg",
-    intents: [
-      <Button.Link href={`https://basescan.org/tx/${transactionId}`}>
-        View Transaction
-      </Button.Link>,
-      <Button.Reset>Home</Button.Reset>,
-    ],
-  });
-});
-
-app.transaction("/tx", async (c) => {
-  const { previousState } = c;
-  console.log({ previousState });
   return c.send({
     chainId: `eip155:8453`,
-    to: previousState.to,
-    //@ts-expect-error
-    data: previousState.data,
-    value: BigInt(previousState.value),
+    to: order.to,
+    data: order.data,
+    value: BigInt(order.value),
   });
 });
 
@@ -448,7 +419,6 @@ function ConvertImage({ toshi, usd }: { toshi: string; usd: string }) {
   );
 }
 
-// function PreviewImage({ amountInUsd, userData, viewerData, state }: { amountInUsd: string, state: State, viewerData: ViewerData, userData: UserData }) {
 
 //   return (
 //     <div
@@ -525,14 +495,11 @@ function ConvertImage({ toshi, usd }: { toshi: string; usd: string }) {
 //       <div tw="flex justify-between py-2">
 //         <div tw="text-gray-400">Token</div>
 //         <div tw="flex text-4xl items-center" style={{ gap: "4px" }}>
-//           <img src={tokenDetails[state.currency].icon} width={50} height={50} />
-//           <span>{tokenDetails[state.currency].label}</span>
 //         </div>
 //       </div>
 //       <div tw="flex justify-between py-2">
 //         <span tw="text-gray-400">Amount</span>
 //         <span tw="text-4xl flex" style={{gap:"10px"}}>
-//           <span>{state.amount}</span>
 //           <span>(${amountInUsd})</span>
 //         </span>
 //       </div>
