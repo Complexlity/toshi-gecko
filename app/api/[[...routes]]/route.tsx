@@ -17,8 +17,6 @@ const baseClient = createPublicClient({
   transport: http(),
 });
 
-
-
 const app = new Frog({
   assetsPath: "/",
   basePath: "/api",
@@ -69,7 +67,7 @@ app.frame("/", async (c) => {
     image: <StartImage />,
     intents: [
       <Button action="/buy">Buy</Button>,
-      <Button action="/convert">Convert(USD)</Button>,
+      <Button action="/convert">Rate(USD)</Button>,
       <Button action="/price">Latest Price</Button>,
     ],
   });
@@ -93,7 +91,7 @@ app.frame("/convert", async (c) => {
   return c.res({
     image: <ConvertImage toshi={toshi} usd={usd} />,
     intents: [
-      <TextInput placeholder="TOSHI amount" />,
+      <TextInput placeholder="TOSHI amount e.g 10000" />,
       <Button>Convert</Button>,
       <Button.Reset>Home</Button.Reset>,
     ],
@@ -126,7 +124,7 @@ app.frame("/buy", async (c) => {
     action: "/finish",
     image: <BuyStartImage />,
     intents: [
-      <TextInput placeholder="ETH amount(default = 0.01)" />,
+      <TextInput placeholder="ETH amount(default=0.01)" />,
       <Button.Transaction target="/tx">Confirm</Button.Transaction>,
       <Button.Reset>Back</Button.Reset>,
     ],
@@ -135,7 +133,6 @@ app.frame("/buy", async (c) => {
 
 app.frame("/finish", async (c) => {
   const { transactionId } = c;
-
 
   return c.res({
     image: "https://pbs.twimg.com/media/F4M9IOlWwAEgTDf.jpg",
@@ -149,37 +146,36 @@ app.frame("/finish", async (c) => {
 });
 
 app.transaction("/tx", async (c) => {
+  const value = c.inputText || "0.01";
 
-const value = c.inputText || "0.01";
-
-// prettier-ignore
-const baseUrl = `https://base.api.0x.org/swap/v1/quote?`
+  // prettier-ignore
+  const baseUrl = `https://base.api.0x.org/swap/v1/quote?`
   const eth = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
   const degen = "0x4ed4e862860bed51a9570b96d89af5e1b0efefed";
-  const toshi =
-    "0xac1bd2486aaf3b5c0fc3fd868558b082a531b2b4";
-  
-// https://0x.org/docs/0x-swap-api/api-references/get-swap-v1-quote#request
-const params = new URLSearchParams({
-  buyToken: toshi,
-  sellToken: eth,
-  sellAmount: parseEther(value).toString(),
-  feeRecipient: "0xaf0E8cbb79CFA794abd64BEE25B0001bEdC38a42",
-  buyTokenPercentageFee: "0.01",
-}).toString();
+  const toshi = "0xac1bd2486aaf3b5c0fc3fd868558b082a531b2b4";
 
-const res = await fetch(baseUrl + params, {
-  headers: { "0x-api-key": process.env.ZEROX_API_KEY || "" },
+  // https://0x.org/docs/0x-swap-api/api-references/get-swap-v1-quote#request
+  const params = new URLSearchParams({
+    buyToken: toshi,
+    sellToken: eth,
+    sellAmount: parseEther(value).toString(),
+    feeRecipient: "0xaf0E8cbb79CFA794abd64BEE25B0001bEdC38a42",
+    buyTokenPercentageFee: "0.01",
+  }).toString();
+
+  const res = await fetch(baseUrl + params, {
+    headers: { "0x-api-key": process.env.ZEROX_API_KEY || "" },
+  });
+
+  const order = (await res.json()) as ZeroXSwapQuote;
+
+  return c.send({
+    chainId: `eip155:8453`,
+    to: order.to,
+    data: order.data,
+    value: BigInt(order.value),
+  });
 });
-
-const order = (await res.json()) as ZeroXSwapQuote;
-
-return c.send({
-  chainId: `eip155:8453`,
-  to: order.to,
-  data: order.data,
-  value: BigInt(order.value),
-});});
 
 function BuyStartImage() {
   return (
@@ -249,14 +245,29 @@ function StartImage() {
       }}
       tw={"p-0"}
     >
+      <h1
+        style={{
+          backgroundImage:
+            "linear-gradient(90deg, rgb(121, 40, 202), rgb(255, 0, 128))",
+          backgroundClip: "text",
+          //@ts-expect-error
+          "-webkit-background-clip": "text",
+          color: "transparent",
+        }}
+        tw="m-0 p-0"
+      >
+        TOSHI GECKO
+      </h1>
+      <h3 tw="m-0 p-0">Your one stop everything toshi app.</h3>
       <img
         tw={"p-0"}
         src={`${imageUrls[`toshi${curr}`]}`}
-        width="360px"
-        height={"360px"}
+        width="300px"
+        height={"300px"}
       />
-      <p tw={"text-6xl text-center"}>
-        Track your $TOSHI worth and live market price
+
+      <p tw={"text-4xl text-center"}>
+        Buy TOSHI, Get Rates to USD, and Monitor live market prices.
       </p>
     </div>
   );
@@ -417,7 +428,6 @@ function ConvertImage({ toshi, usd }: { toshi: string; usd: string }) {
     </div>
   );
 }
-
 
 //   return (
 //     <div
