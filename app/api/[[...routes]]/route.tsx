@@ -156,8 +156,8 @@ const value = c.inputText || "0.01";
 const baseUrl = `https://base.api.0x.org/swap/v1/quote?`
   const eth = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
   const degen = "0x4ed4e862860bed51a9570b96d89af5e1b0efefed";
-  const toshi = "0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4";
-
+  const toshi =
+"0xac1bd2486aaf3b5c0fc3fd868558b082a531b2b4";
 // https://0x.org/docs/0x-swap-api/api-references/get-swap-v1-quote#request
 const params = new URLSearchParams({
   buyToken: toshi,
