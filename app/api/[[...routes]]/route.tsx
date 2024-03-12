@@ -151,13 +151,16 @@ app.frame("/finish", async (c) => {
 app.transaction("/tx", async (c) => {
   const { inputText } = c;
 
+
   const baseUrl = "https://base.api.0x.org/swap/v1/quote?";
 
   let inputTextAsNumber = Number(inputText);
   if (isNaN(inputTextAsNumber) || inputTextAsNumber == 0) {
     inputTextAsNumber = 0.01;
   }
+
   const amount = parseEther(`${inputTextAsNumber}`).toString();
+  console.log({amount, inputTextAsNumber})
   // https://0x.org/docs/0x-swap-api/api-references/get-swap-v1-quote#request
   const params = new URLSearchParams({
     buyToken: assets.toshi.address,
@@ -173,6 +176,8 @@ app.transaction("/tx", async (c) => {
   });
 
   const order = (await res.json()) as ZeroXSwapQuote;
+
+  console.log({order})
 
   return c.send({
     chainId: `eip155:8453`,
