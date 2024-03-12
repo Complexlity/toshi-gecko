@@ -5,12 +5,12 @@ import { Button, Frog, TextInput } from "frog";
 // import { neynar } from 'frog/hubs'
 import { handle } from "frog/next";
 import { imageUrls } from "@/app/utils/images";
-import { Address, parseAbi, parseEther } from "viem";
+import { Address, parseAbi, parseEther, parseUnits } from "viem";
 import { createPublicClient, http } from "viem";
 import { base } from "viem/chains";
 import { env } from "hono/adapter";
 import { ZeroXSwapQuote } from "@/app/utils/types";
-import fs from 'fs'
+// import fs from 'fs'
 
 const baseClient = createPublicClient({
   chain: base,
@@ -98,29 +98,29 @@ app.frame("/buy", async (c) => {
   //   functionName: "symbol",
   // });
 
-   const baseUrl = "https://base.api.0x.org/swap/v1/quote?";
+  //  const baseUrl = "https://base.api.0x.org/swap/v1/quote?";
 
-  const value = c.inputText || "1";
-  const takerAmount = "1000000000000000000";
-  const amount = Number(value) * 100000;
-  // const amount = parseEther(value).toString();
-   // https://0x.org/docs/0x-swap-api/api-references/get-swap-v1-quote#request
-   const params = new URLSearchParams({
-     buyToken: assets.toshi.address,
-     sellToken: assets.usdc.address,
-     sellAmount: `${amount}`,
-     // sellAmount: parseEther(value).toString(),
-     feeRecipient: "0xaf0E8cbb79CFA794abd64BEE25B0001bEdC38a42",
-     buyTokenPercentageFee: "0.01",
-   }).toString();
+  // const value = c.inputText || "1";
+  // const takerAmount = "1000000000000000000";
+  // const amount = Number(value) * 100000;
+  // // const amount = parseEther(value).toString();
+  //  // https://0x.org/docs/0x-swap-api/api-references/get-swap-v1-quote#request
+  //  const params = new URLSearchParams({
+  //    buyToken: assets.toshi.address,
+  //    sellToken: assets.usdc.address,
+  //    sellAmount: `${amount}`,
+  //    // sellAmount: parseEther(value).toString(),
+  //    feeRecipient: "0xaf0E8cbb79CFA794abd64BEE25B0001bEdC38a42",
+  //    buyTokenPercentageFee: "0.01",
+  //  }).toString();
 
-  console.log("Fetching...")
-   const res = await fetch(baseUrl + params, {
-     headers: { "0x-api-key": process.env.ZEROX_API_KEY || "" },
-   });
+  // console.log("Fetching...")
+  //  const res = await fetch(baseUrl + params, {
+  //    headers: { "0x-api-key": process.env.ZEROX_API_KEY || "" },
+  //  });
 
-  const order = (await res.json()) as ZeroXSwapQuote;
-  fs.writeFileSync('order.json', JSON.stringify(order, null, 2))
+  // const order = (await res.json()) as ZeroXSwapQuote;
+  // fs.writeFileSync('order.json', JSON.stringify(order, null, 2))
 
 
 
@@ -152,12 +152,13 @@ app.transaction("/tx", async (c) => {
   const baseUrl = "https://base.api.0x.org/swap/v1/quote?";
 
   const value = c.inputText || "2";
-  const amount = Number(value) * 1000000;
+  // const amount = Number(value) * 1000000;
+  const amount = parseUnits(value, 6).toString()
   // https://0x.org/docs/0x-swap-api/api-references/get-swap-v1-quote#request
   const params = new URLSearchParams({
     buyToken: assets.toshi.address,
     sellToken: assets.usdc.address,
-    sellAmount: `${amount}`,
+    sellAmount: amount,
     // sellAmount: parseEther(value).toString(),
     feeRecipient: "0xaf0E8cbb79CFA794abd64BEE25B0001bEdC38a42",
     buyTokenPercentageFee: "0.01",
