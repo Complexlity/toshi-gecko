@@ -151,7 +151,7 @@ app.frame("/finish", async (c) => {
 app.transaction("/tx", async (c) => {
   const baseUrl = "https://base.api.0x.org/swap/v1/quote?";
 
-  const value = c.inputText || "2";
+  const value = c.inputText || "0.01";
   // const amount = Number(value) * 1000000;
   const amount = parseUnits(value, 6).toString()
   // https://0x.org/docs/0x-swap-api/api-references/get-swap-v1-quote#request
