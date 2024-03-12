@@ -49,6 +49,13 @@ const assets = {
     image: "https://i.ibb.co/JHDfxTV/toshi.png",
     address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" as `0x${string}`,
   },
+  degen: {
+    name: '$DEGEN',
+    network: 'base',
+    image:
+      'https://pbs.twimg.com/profile_images/1751028059325501440/9jrvP_yG_400x400.jpg',
+    address: '0x4ed4e862860bed51a9570b96d89af5e1b0efefed' as `0x${string}`,
+  },
 };
 
 // Uncomment to use Edge Runtime
@@ -151,15 +158,14 @@ app.frame("/finish", async (c) => {
 app.transaction("/tx", async (c) => {
   const baseUrl = "https://base.api.0x.org/swap/v1/quote?";
 
-  const value = c.inputText || "0.01";
+  const value = c.inputText || "1";
   // const amount = Number(value) * 1000000;
-  const amount = parseUnits(value, 6).toString()
+  // const amount = parseUnits(value, 6).toString()
   // https://0x.org/docs/0x-swap-api/api-references/get-swap-v1-quote#request
   const params = new URLSearchParams({
     buyToken: assets.toshi.address,
     sellToken: assets.usdc.address,
-    sellAmount: amount,
-    // sellAmount: parseEther(value).toString(),
+    sellAmount: parseEther(value).toString(),
     feeRecipient: "0xaf0E8cbb79CFA794abd64BEE25B0001bEdC38a42",
     buyTokenPercentageFee: "0.01",
   }).toString();
