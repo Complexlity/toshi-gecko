@@ -18,16 +18,16 @@ const baseClient = createPublicClient({
 });
 
 type State = {
-  to: `0x${string}`,
-  data: string,
-  value: string
-}
+  to: `0x${string}`;
+  data: string;
+  value: string;
+};
 
 const app = new Frog<{ State: State }>({
   initialState: {
-    to:"0xaf0E8cbb79CFA794abd64BEE25B0001bEdC38a42",
+    to: "0xaf0E8cbb79CFA794abd64BEE25B0001bEdC38a42",
     data: "",
-    value: ""
+    value: "",
   },
   assetsPath: "/",
   basePath: "/api",
@@ -61,11 +61,11 @@ const assets = {
     address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" as `0x${string}`,
   },
   degen: {
-    name: '$DEGEN',
-    network: 'base',
+    name: "$DEGEN",
+    network: "base",
     image:
-      'https://pbs.twimg.com/profile_images/1751028059325501440/9jrvP_yG_400x400.jpg',
-    address: '0x4ed4e862860bed51a9570b96d89af5e1b0efefed' as `0x${string}`,
+      "https://pbs.twimg.com/profile_images/1751028059325501440/9jrvP_yG_400x400.jpg",
+    address: "0x4ed4e862860bed51a9570b96d89af5e1b0efefed" as `0x${string}`,
   },
 };
 
@@ -74,50 +74,25 @@ const assets = {
 
 app.frame("/", async (c) => {
   const { buttonValue, inputText, status } = c;
-  console.log({buttonValue})
   return c.res({
-    image:
-        buttonValue == "buy" ? (
-          <BuyStartImage />
-        ) :
-        buttonValue == "convert" ? (
-        <ConvertImage toshi={"0"} usd={"0"} />
-          ) : (
-        <StartImage />
-      ),
-    intents:
-      buttonValue == "buy" ?
-        [
-          <TextInput placeholder="ETH amount(default = 0.01)" />,
-          <Button action="/buy">Buy</Button>,
-          <Button.Reset>Back</Button.Reset>
-        ]
-        : buttonValue == "convert" ?
-          [
-           <TextInput placeholder="TOSHI amount" />,
-          <Button action="/convert">Convert (USD)</Button>,
-          <Button.Reset>Home</Button.Reset>,
-          ]
-          : [
-      <Button value="buy">Buy</Button>,
-      <Button value="convert">Convert(USD)</Button>,
+    image: <StartImage />,
+    intents: [
+      <Button action="/buy">Buy</Button>,
+      <Button action="/convert">Convert(USD)</Button>,
       <Button action="/price">Latest Price</Button>,
-    ]
+    ],
   });
 });
 
-
-app.frame('/convert', async (c) => {
-  const {  inputText } = c;
+app.frame("/convert", async (c) => {
+  const { inputText } = c;
   let inputTextAsNumber = Number(inputText);
   let toshi: string;
   let usd: string;
   if (isNaN(inputTextAsNumber) || inputTextAsNumber == 0) {
-    toshi = "0"
-    usd = "0"
-  }
-  else {
-
+    toshi = "0";
+    usd = "0";
+  } else {
     let toshiPriceData = await getToshiPrice();
     const amount = inputTextAsNumber * toshiPriceData.usdPrice;
     toshi = formatCurrency(inputTextAsNumber);
@@ -126,21 +101,18 @@ app.frame('/convert', async (c) => {
 
   return c.res({
     image: <ConvertImage toshi={toshi} usd={usd} />,
-    intents:
-      [
-           <TextInput placeholder="TOSHI amount(default = 1000)" />,
-          <Button>Convert</Button>,
-          <Button.Reset>Home</Button.Reset>,
-    ]
-  }
-  )
-})
+    intents: [
+      <TextInput placeholder="TOSHI amount" />,
+      <Button>Convert</Button>,
+      <Button.Reset>Home</Button.Reset>,
+    ],
+  });
+});
 
-app.frame('/price', async (c) => {
+app.frame("/price", async (c) => {
   let toshiPriceData = await getToshiPrice();
   const percentChange = Number(toshiPriceData["24hrPercentChange"]);
   const actualChange = (toshiPriceData.usdPrice * percentChange) / 100;
-
 
   return c.res({
     image: (
@@ -150,60 +122,57 @@ app.frame('/price', async (c) => {
         changeA={actualChange.toFixed(10)}
       />
     ),
-    intents: [
-      <Button>Refresh</Button>,
-      <Button.Reset>Home</Button.Reset>
-    ]
+    intents: [<Button>Refresh</Button>, <Button.Reset>Home</Button.Reset>],
+    headers: {
+      "Content-Type": "image/png",
+      "Cache-Control": "max-age=1",
+    },
   });
+});
 
-})
-
-app.frame('/buy', async (c) => {
-  return c.res(
-    {
-      image: <BuyStartImage />,
-      intents: [
-        <Button action="/preview">Buy</Button>,
-        <Button.Reset>Home</Button.Reset>
-      ]
-    }
-  )
-})
-
-
+app.frame("/buy", async (c) => {
+  return c.res({
+    image: <BuyStartImage />,
+    intents: [
+      <TextInput placeholder="ETH amount(default = 0.01)" />,
+      <Button action="/preview">Preview Tx</Button>,
+      <Button.Reset>Back</Button.Reset>,
+    ],
+  });
+});
 
 app.frame("/preview", async (c) => {
-  const { deriveState, previousState } = c
+  const { deriveState, previousState, inputText } = c;
   let state = previousState;
 
+  const baseUrl = "https://base.api.0x.org/swap/v1/quote?";
 
-   const baseUrl = "https://base.api.0x.org/swap/v1/quote?";
+  let inputTextAsNumber = Number(inputText);
+  if (isNaN(inputTextAsNumber) || inputTextAsNumber == 0) {
+    inputTextAsNumber = 0.01;
+  }
+  const amount = parseEther(`${inputTextAsNumber}`).toString();
+  // https://0x.org/docs/0x-swap-api/api-references/get-swap-v1-quote#request
+  const params = new URLSearchParams({
+    buyToken: assets.toshi.address,
+    sellToken: assets.eth.address,
+    sellAmount: amount,
+    feeRecipient: "0xaf0E8cbb79CFA794abd64BEE25B0001bEdC38a42",
+    buyTokenPercentageFee: "0.01",
+  }).toString();
 
-  const value = c.inputText || "0.01";
-  const amount = parseEther(value).toString();
-   // https://0x.org/docs/0x-swap-api/api-references/get-swap-v1-quote#request
-   const params = new URLSearchParams({
-     buyToken: assets.toshi.address,
-     sellToken: assets.eth.address,
-     sellAmount: amount,
-     feeRecipient: "0xaf0E8cbb79CFA794abd64BEE25B0001bEdC38a42",
-     buyTokenPercentageFee: "0.01",
-   }).toString();
-
-  console.log("Fetching...")
-   const res = await fetch(baseUrl + params, {
-     headers: { "0x-api-key": process.env.ZEROX_API_KEY || "" },
-   });
+  console.log("Fetching...");
+  const res = await fetch(baseUrl + params, {
+    headers: { "0x-api-key": process.env.ZEROX_API_KEY || "" },
+  });
 
   const order = (await res.json()) as ZeroXSwapQuote;
 
   state = deriveState((previousState) => {
-    previousState.to = order.to,
-      previousState.data = order.data,
-      previousState.value = order.value
-  })
-
-
+    (previousState.to = order.to),
+      (previousState.data = order.data),
+      (previousState.value = order.value);
+  });
 
   return c.res({
     action: "/finish",
@@ -230,8 +199,8 @@ app.frame("/finish", async (c) => {
 });
 
 app.transaction("/tx", async (c) => {
-  const { previousState } = c
-  console.log({previousState})
+  const { previousState } = c;
+  console.log({ previousState });
   return c.send({
     chainId: `eip155:8453`,
     to: previousState.to,
@@ -478,7 +447,6 @@ function ConvertImage({ toshi, usd }: { toshi: string; usd: string }) {
   );
 }
 
-
 // function PreviewImage({ amountInUsd, userData, viewerData, state }: { amountInUsd: string, state: State, viewerData: ViewerData, userData: UserData }) {
 
 //   return (
@@ -578,7 +546,6 @@ function ConvertImage({ toshi, usd }: { toshi: string; usd: string }) {
 //     </div>
 //   );
 // }
-
 
 export const GET = handle(app);
 export const POST = handle(app);
