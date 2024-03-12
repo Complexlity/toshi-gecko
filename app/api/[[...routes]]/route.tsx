@@ -17,7 +17,18 @@ const baseClient = createPublicClient({
   transport: http(),
 });
 
-const app = new Frog({
+type State = {
+  to: `0x${string}`,
+  data: string,
+  value: string
+}
+
+const app = new Frog<{ State: State }>({
+  initialState: {
+    to:"0xaf0E8cbb79CFA794abd64BEE25B0001bEdC38a42",
+    data: "",
+    value: ""
+  },
   assetsPath: "/",
   basePath: "/api",
   imageOptions: {
@@ -63,71 +74,134 @@ const assets = {
 
 app.frame("/", async (c) => {
   const { buttonValue, inputText, status } = c;
-  const inputTextAsNumber = Number(inputText);
-  if (buttonValue == "convert") {
-    if (isNaN(inputTextAsNumber) || inputTextAsNumber == 0) {
-      throw new Error("Invalid input");
-    }
-  }
-  let toshiPriceData = await getToshiPrice();
-  const percentChange = Number(toshiPriceData["24hrPercentChange"]);
-  const actualChange = (toshiPriceData.usdPrice * percentChange) / 100;
-  const amount = inputTextAsNumber * toshiPriceData.usdPrice;
-  const toshi = formatCurrency(inputTextAsNumber);
-  const usd = formatCurrency(amount, 11, 4);
-
+  console.log({buttonValue})
   return c.res({
     image:
-      status === "initial" ? (
+        buttonValue == "buy" ? (
+          <BuyStartImage />
+        ) :
+        buttonValue == "convert" ? (
+        <ConvertImage toshi={"0"} usd={"0"} />
+          ) : (
         <StartImage />
-      ) : buttonValue == "price" ? (
-        <PriceImage
-          price={toshiPriceData.usdPrice.toFixed(8)}
-          changeP={percentChange.toFixed(2)}
-          changeA={actualChange.toFixed(10)}
-        />
-      ) : (
-        <ConvertImage toshi={toshi} usd={usd} />
       ),
-    intents: [
-      <TextInput placeholder="TOSHI amount. e.g 100, 30000" />,
-      <Button action="/buy">Buy</Button>,
+    intents:
+      buttonValue == "buy" ?
+        [
+          <TextInput placeholder="ETH amount(default = 0.01)" />,
+          <Button action="/buy">Buy</Button>,
+          <Button.Reset>Back</Button.Reset>
+        ]
+        : buttonValue == "convert" ?
+          [
+           <TextInput placeholder="TOSHI amount" />,
+          <Button action="/convert">Convert (USD)</Button>,
+          <Button.Reset>Home</Button.Reset>,
+          ]
+          : [
+      <Button value="buy">Buy</Button>,
       <Button value="convert">Convert(USD)</Button>,
-      <Button value="price">Latest Price</Button>,
-    ],
+      <Button action="/price">Latest Price</Button>,
+    ]
   });
 });
 
-app.frame("/buy", async (c) => {
-  // let symbol = await baseClient.readContract({
-  //   address: assets.toshi.address,
-  //   abi: parseAbi(["function symbol() view returns (string)"]),
-  //   functionName: "symbol",
-  // });
 
-  //  const baseUrl = "https://base.api.0x.org/swap/v1/quote?";
+app.frame('/convert', async (c) => {
+  const {  inputText } = c;
+  let inputTextAsNumber = Number(inputText);
+  let toshi: string;
+  let usd: string;
+  if (isNaN(inputTextAsNumber) || inputTextAsNumber == 0) {
+    toshi = "0"
+    usd = "0"
+  }
+  else {
 
-  // const value = c.inputText || "1";
-  // const takerAmount = "1000000000000000000";
-  // const amount = Number(value) * 100000;
-  // // const amount = parseEther(value).toString();
-  //  // https://0x.org/docs/0x-swap-api/api-references/get-swap-v1-quote#request
-  //  const params = new URLSearchParams({
-  //    buyToken: assets.toshi.address,
-  //    sellToken: assets.usdc.address,
-  //    sellAmount: `${amount}`,
-  //    // sellAmount: parseEther(value).toString(),
-  //    feeRecipient: "0xaf0E8cbb79CFA794abd64BEE25B0001bEdC38a42",
-  //    buyTokenPercentageFee: "0.01",
-  //  }).toString();
+    let toshiPriceData = await getToshiPrice();
+    const amount = inputTextAsNumber * toshiPriceData.usdPrice;
+    toshi = formatCurrency(inputTextAsNumber);
+    usd = formatCurrency(amount, 11, 4);
+  }
 
-  // console.log("Fetching...")
-  //  const res = await fetch(baseUrl + params, {
-  //    headers: { "0x-api-key": process.env.ZEROX_API_KEY || "" },
-  //  });
+  return c.res({
+    image: <ConvertImage toshi={toshi} usd={usd} />,
+    intents:
+      [
+           <TextInput placeholder="TOSHI amount(default = 1000)" />,
+          <Button>Convert</Button>,
+          <Button.Reset>Home</Button.Reset>,
+    ]
+  }
+  )
+})
 
-  // const order = (await res.json()) as ZeroXSwapQuote;
-  // fs.writeFileSync('order.json', JSON.stringify(order, null, 2))
+app.frame('/price', async (c) => {
+  let toshiPriceData = await getToshiPrice();
+  const percentChange = Number(toshiPriceData["24hrPercentChange"]);
+  const actualChange = (toshiPriceData.usdPrice * percentChange) / 100;
+
+
+  return c.res({
+    image: (
+      <PriceImage
+        price={toshiPriceData.usdPrice.toFixed(8)}
+        changeP={percentChange.toFixed(2)}
+        changeA={actualChange.toFixed(10)}
+      />
+    ),
+    intents: [
+      <Button>Refresh</Button>,
+      <Button.Reset>Home</Button.Reset>
+    ]
+  });
+
+})
+
+app.frame('/buy', async (c) => {
+  return c.res(
+    {
+      image: <BuyStartImage />,
+      intents: [
+        <Button action="/preview">Buy</Button>,
+        <Button.Reset>Home</Button.Reset>
+      ]
+    }
+  )
+})
+
+
+
+app.frame("/preview", async (c) => {
+  const { deriveState, previousState } = c
+  let state = previousState;
+
+
+   const baseUrl = "https://base.api.0x.org/swap/v1/quote?";
+
+  const value = c.inputText || "0.01";
+  const amount = parseEther(value).toString();
+   // https://0x.org/docs/0x-swap-api/api-references/get-swap-v1-quote#request
+   const params = new URLSearchParams({
+     buyToken: assets.toshi.address,
+     sellToken: assets.eth.address,
+     sellAmount: amount,
+     feeRecipient: "0xaf0E8cbb79CFA794abd64BEE25B0001bEdC38a42",
+     buyTokenPercentageFee: "0.01",
+   }).toString();
+
+  console.log("Fetching...")
+   const res = await fetch(baseUrl + params, {
+     headers: { "0x-api-key": process.env.ZEROX_API_KEY || "" },
+   });
+
+  const order = (await res.json()) as ZeroXSwapQuote;
+
+  state = deriveState((previousState) => {
+    previousState.to = order.to,
+      previousState.data = order.data,
+      previousState.value = order.value
+  })
 
 
 
@@ -145,7 +219,7 @@ app.frame("/finish", async (c) => {
   const { transactionId } = c;
 
   return c.res({
-    image: "https://i.ibb.co/f8VCgBC/thankyou.png",
+    image: "https://pbs.twimg.com/media/F4M9IOlWwAEgTDf.jpg",
     intents: [
       <Button.Link href={`https://basescan.org/tx/${transactionId}`}>
         View Transaction
@@ -156,34 +230,37 @@ app.frame("/finish", async (c) => {
 });
 
 app.transaction("/tx", async (c) => {
-  const baseUrl = "https://base.api.0x.org/swap/v1/quote?";
-
-  const value = c.inputText || "1";
-  // const amount = Number(value) * 1000000;
-  const amount = parseUnits(value, 6).toString()
-  // https://0x.org/docs/0x-swap-api/api-references/get-swap-v1-quote#request
-  const params = new URLSearchParams({
-    buyToken: assets.toshi.address,
-    sellToken: assets.usdc.address,
-    sellAmount: amount,
-    feeRecipient: "0xaf0E8cbb79CFA794abd64BEE25B0001bEdC38a42",
-    buyTokenPercentageFee: "0.01",
-  }).toString();
-
-  const res = await fetch(baseUrl + params, {
-    headers: { "0x-api-key": process.env.ZEROX_API_KEY || "" },
-  });
-
-  const order = (await res.json()) as ZeroXSwapQuote;
-  console.log({order})
-
+  const { previousState } = c
+  console.log({previousState})
   return c.send({
     chainId: `eip155:8453`,
-    to: order.to,
-    data: order.data,
-    value: BigInt(order.value),
+    to: previousState.to,
+    //@ts-expect-error
+    data: previousState.data,
+    value: BigInt(previousState.value),
   });
 });
+
+function BuyStartImage() {
+  return (
+    <div
+      style={{
+        height: "100%",
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#fff",
+        backgroundImage: "linear-gradient(to bottom, #dbf4ff, #fff1f1)",
+        fontSize: 32,
+        fontWeight: 600,
+      }}
+    >
+      <h1 tw="text-center">How Much Are You Buying?</h1>
+    </div>
+  );
+}
 
 function TradeImage() {
   return (
@@ -208,7 +285,7 @@ function TradeImage() {
       >
         <path d="M37.59.25l36.95 64H.64l36.95-64z"></path>
       </svg>
-      <div style={{ marginTop: 40 }}>Hello, World</div>
+      <div style={{ marginTop: 40 }}>Preview Transaction</div>
     </div>
   );
 }
@@ -380,7 +457,7 @@ function ConvertImage({ toshi, usd }: { toshi: string; usd: string }) {
           height={"100%"}
         />
       </div>
-      <p tw="text-6xl font-bold underline">Converter</p>
+      <p tw="text-6xl font-bold">Converter</p>
       <div tw={"flex flex-col text-8xl"}>
         <div tw={"flex justify-between items-center  mb-6"}>
           <div tw="flex flex-col items-center w-[20%]">
@@ -400,6 +477,108 @@ function ConvertImage({ toshi, usd }: { toshi: string; usd: string }) {
     </div>
   );
 }
+
+
+// function PreviewImage({ amountInUsd, userData, viewerData, state }: { amountInUsd: string, state: State, viewerData: ViewerData, userData: UserData }) {
+
+//   return (
+//     <div
+//       style={{
+//         height: "100%",
+//         width: "100%",
+//         display: "flex",
+//         flexDirection: "column",
+//         fontSize: 32,
+//         fontWeight: 600,
+//         padding: "10px 50px",
+//       }}
+//       tw="bg-slate-900 text-white"
+//     >
+//       <span tw="text-6xl my-4">Preview Transaction </span>
+//       <div
+//         tw="flex items-center  mx-auto justify-between max-w-4/5 w-full flex-col"
+//         style={{
+//           gap: "10px",
+//         }}
+//       >
+//         <div tw="flex justify-between py-2  w-full">
+//           <span tw="text-center text-gray-500 flex">From</span>
+//           <span tw="text-center text-gray-500">To</span>
+//         </div>
+//         <div tw="flex justify-between py-2  w-full">
+//           <div tw="rounded-full flex w-[100px] h-[100px] overflow-hidden ">
+//             <img
+//               // src="https://i.imgur.com/mt3nbeI.jpg"
+//               src={viewerData?.userImageUrl}
+//               width={"100%"}
+//               height={"100%"}
+//               style={{
+//                 objectFit: "cover",
+//               }}
+//             />
+//           </div>
+//           <span>
+//             <svg
+//               xmlns="http://www.w3.org/2000/svg"
+//               width="100"
+//               height="100"
+//               viewBox="0 0 24 24"
+//               fill="none"
+//               stroke="currentColor"
+//               stroke-width="2"
+//               stroke-linecap="round"
+//               stroke-linejoin="round"
+//             >
+//               <path d="M18 8L22 12L18 16" />
+//               <path d="M2 12H22" />
+//             </svg>{" "}
+//           </span>
+//           <div tw="rounded-full flex w-[100px] h-[100px] overflow-hidden ">
+//             <img
+//               // src="https://i.imgur.com/mt3nbeI.jpg"
+//               src={userData.userImageUrl}
+//               width={"100%"}
+//               height={"100%"}
+//               style={{
+//                 objectFit: "cover",
+//               }}
+//             />
+//           </div>
+//         </div>
+
+//         <div tw="flex w-full justify-between">
+//           <span>You (@{viewerData?.username})</span>
+//           <span>@{userData.username}</span>
+//         </div>
+//       </div>
+//       <hr tw="py-[1px] w-full bg-gray-800" />
+
+//       <div tw="flex justify-between py-2">
+//         <div tw="text-gray-400">Token</div>
+//         <div tw="flex text-4xl items-center" style={{ gap: "4px" }}>
+//           <img src={tokenDetails[state.currency].icon} width={50} height={50} />
+//           <span>{tokenDetails[state.currency].label}</span>
+//         </div>
+//       </div>
+//       <div tw="flex justify-between py-2">
+//         <span tw="text-gray-400">Amount</span>
+//         <span tw="text-4xl flex" style={{gap:"10px"}}>
+//           <span>{state.amount}</span>
+//           <span>(${amountInUsd})</span>
+//         </span>
+//       </div>
+
+//       <div tw="flex justify-between py-2 items-center">
+//         <span tw="text-gray-400">Chain</span>
+//         <span style={{ gap: "4px" }} tw="flex items-center">
+//           <img src="https://i.ibb.co/kBzGkrL/base.png" width={50} height={50} />
+//           <span>Base</span>
+//         </span>
+//       </div>
+//     </div>
+//   );
+// }
+
 
 export const GET = handle(app);
 export const POST = handle(app);
