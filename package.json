@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@moralisweb3/common-evm-utils": "^2.25.1",
+    "@xmtp/frames-validator": "^0.5.2",
     "frames.js": "^0.8.1",
     "frog": "^0.5.5",
     "hono": "^4",
