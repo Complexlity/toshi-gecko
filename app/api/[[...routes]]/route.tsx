@@ -62,7 +62,7 @@ const assets = {
 };
 
 
-export const xmtpSupport = async (c: Context, next: Next) => {
+const xmtpSupport = async (c: Context, next: Next) => {
   await next();
 
   const isFrame = c.res.headers.get("content-type")?.includes("html");
@@ -90,7 +90,7 @@ export const xmtpSupport = async (c: Context, next: Next) => {
   });
 };
 
-export const validateXMTPUser = async (c: Context, next: Next) => {
+const validateXMTPUser = async (c: Context, next: Next) => {
   if (c.req.method !== "POST") {
     await next();
     return;
@@ -155,7 +155,7 @@ function extractState(htmlString: string): object | null {
   return JSON.parse(decodeURIComponent(state));
 }
 
-export function toSearchParams(object: object) {
+function toSearchParams(object: object) {
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(object)) {
     const encoded = (() => {
