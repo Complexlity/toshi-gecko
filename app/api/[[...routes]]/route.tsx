@@ -176,25 +176,25 @@ function toSearchParams(object: object) {
   return params;
 }
 
-app.use(xmtpSupport)
+// app.use(xmtpSupport)
 
-// app.use(async (c, next) => {
+app.use(async (c, next) => {
 
-//   console.log('Incoming request:', c.req);
+  console.log('Incoming request:', c.req);
 
-//   await next();
-//   const isFrame = c.res.headers.get('content-type')?.includes('html');
+  await next();
+  const isFrame = c.res.headers.get('content-type')?.includes('html');
 
-//   if (isFrame) {
-//     let html = await c.res.text();
-//     const metaTag = '<meta property="of:accepts:xmtp" content="2024-02-01" />';
-//     c.res = new Response(html, {
-//       headers: {
-//         'content-type': 'text/html',
-//       },
-//     });
-//   }
-// })
+  if (isFrame) {
+    let html = await c.res.text();
+    const metaTag = '<meta property="of:accepts:xmtp" content="2024-02-01" />';
+    c.res = new Response(html, {
+      headers: {
+        'content-type': 'text/html',
+      },
+    });
+  }
+})
 // Uncomment to use Edge Runtime
 // export const runtime = 'edge'
 
